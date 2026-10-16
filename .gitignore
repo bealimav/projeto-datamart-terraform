@@ -1,0 +1,28 @@
+# Terraform
+terraform/.terraform/
+terraform/.terraform.lock.hcl
+terraform/*.tfstate
+terraform/*.tfstate.*
+terraform/crash.log
+terraform/*.zip
+terraform/build/
+
+# AWS
+.aws/
+.env
+.env.*
+
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# Dados
+*.parquet
+*.csv
+
+# Logs
+*.log
+.DS_Store
+.idea/
