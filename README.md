@@ -5,13 +5,18 @@ Pipeline de Engenharia de Dados na AWS, **100% definido como código** via Terra
 ![AWS](https://img.shields.io/badge/AWS-Serverless-orange)
 ![Terraform](https://img.shields.io/badge/Terraform-1.5+-purple)
 ![Python](https://img.shields.io/badge/Python-3.12-blue)
-![Status](https://img.shields.io/badge/Status-Completo-green)
+![CI/CD](https://img.shields.io/badge/CI--CD-GitHub_Actions-black)
+![Terraform Validate](https://github.com/bealimav/projeto-datamart-terraform/actions/workflows/terraform.yml/badge.svg)
+
+---
 
 ## 🎯 Problema de Negócio
 
 A DataMart tinha um pipeline funcionando (Projeto 1), mas o processo de recriar o ambiente manualmente levava horas e era suscetível a erros humanos.
 
 **Solução:** migrar toda a infraestrutura para **Infrastructure as Code (IaC)** usando Terraform.
+
+---
 
 ## 🏗️ Arquitetura
 
@@ -21,21 +26,35 @@ A DataMart tinha um pipeline funcionando (Projeto 1), mas o processo de recriar 
 [Athena] ← [S3 refined/] ← [Python ETL Local]
 ```
 
-## 🛠️ Tecnologias
+---
 
-- **Terraform** — Infrastructure as Code
-- **AWS Provider** (~> 5.0) — Integração com AWS
-- **Archive Provider** — Empacotamento automático da Lambda
-- **Amazon S3** — Data Lake em camadas (raw/trusted/refined/quarentena)
-- **AWS Lambda** (Python 3.12) — Validação orientada a eventos
-- **AWS IAM** — Roles e políticas
-- **CloudWatch** — Logs com retenção de 1 dia
-- **Python + Boto3 + Pandas** — Pipeline local de ETL
+## 🚀 CI/CD (Integração Contínua)
+
+Este projeto conta com uma esteira automatizada de **GitHub Actions** (`.github/workflows/terraform.yml`). A cada `git push`, o robô na nuvem:
+1. Instala o Terraform.
+2. Roda o `terraform init` para baixar os providers.
+3. Roda o `terraform validate` para garantir que não há erros de sintaxe no código HCL.
+Isso evita que alterações de infraestrutura quebradas cheguem à branch principal.
+
+---
+
+## 🛠️ Tecnologias Utilizadas
+
+- **Terraform** — Infrastructure as Code.
+- **AWS Provider** (~> 5.0) — Integração com AWS.
+- **Archive Provider** — Empacotamento automático da Lambda.
+- **GitHub Actions** — Automação de validação de infraestrutura.
+- **Amazon S3, Lambda e IAM** — Recursos provisionados.
+- **Python + Boto3 + Pandas** — Pipeline local de ETL.
+
+---
 
 ## 📁 Estrutura
 
 ```text
 projeto-datamart-terraform/
+├── .github/workflows/
+│   └── terraform.yml        # CI/CD de validação de infraestrutura
 ├── lambda/
 │   └── valida.py            # Código da Lambda
 ├── scripts/
@@ -47,22 +66,15 @@ projeto-datamart-terraform/
 │   ├── s3.tf                # Bucket + camadas
 │   ├── iam.tf               # Role + policies
 │   ├── lambda.tf            # Função + trigger S3
-│   ├── outputs.tf           # Outputs
-│   └── terraform.tfvars     # Valores das variáveis
-├── .gitignore
+│   └── outputs.tf           # Outputs
 └── README.md
 ```
 
+---
+
 ## 🚀 Como Reproduzir
 
-### Pré-requisitos
-
-- Terraform >= 1.5.0
-- AWS CLI configurado
-- Python 3.10+ com `py -m pip install boto3 faker pandas pyarrow`
-
-### Criar infraestrutura
-
+### 1. Criar infraestrutura
 ```bash
 cd terraform
 terraform init
@@ -70,45 +82,29 @@ terraform plan
 terraform apply
 ```
 
-### Popular e testar o pipeline
-
+### 2. Popular e testar o pipeline
 ```bash
 py scripts/gerador.py
 py scripts/etl_local.py
 ```
 
-### Destruir tudo (evitar custos)
-
+### 3. Destruir tudo (evitar custos)
 ```bash
 cd terraform
 terraform destroy
 ```
 
-## 🎯 Vantagens sobre o Projeto 1
-
-| Aspecto | Projeto 1 (Manual) | Projeto 2 (Terraform) |
-|---------|:---:|:---:|
-| Tempo para recriar ambiente | ~2 horas | **~1 minuto** |
-| Versionamento de infra | ❌ | ✅ |
-| Reproduzível | ❌ | ✅ |
-| Erro humano | Alto | Baixo |
-| CI/CD ready | ❌ | ✅ |
-| Custo se esquecer algo | Alto | Baixo (destroy limpa tudo) |
+---
 
 ## 📚 Aprendizados
 
-- Infrastructure as Code com Terraform
-- Providers, resources, variables, outputs
-- `data sources` (aws_caller_identity, archive_file)
-- Referência entre recursos (bucket → lambda → trigger)
-- Ciclo `init` → `plan` → `apply` → `destroy`
-- FinOps via lifecycle policies no S3
-- `force_destroy` em buckets S3 para destruição limpa
+- Infrastructure as Code com Terraform.
+- Ciclo `init` → `plan` → `apply` → `destroy`.
+- `force_destroy` em buckets S3 para destruição limpa.
+- Implementação de **CI/CD** para validação de infraestrutura.
+- FinOps via lifecycle policies no S3.
 
-## 💡 Nota sobre FinOps
-
-> Este projeto foi desenvolvido aplicando o princípio de *Infrastructure as Code*. Toda a infraestrutura AWS pode ser recriada ou destruída com apenas um comando (`terraform apply` / `terraform destroy`). Nenhum recurso permanece na nuvem após a destruição, mantendo o custo em $0.
+---
 
 ## 👩‍💻 Autora
-
-Beatriz Lima — Estudante de Engenharia de Dados
+Beatriz Lima — Estagiária de Engenharia de Dados
